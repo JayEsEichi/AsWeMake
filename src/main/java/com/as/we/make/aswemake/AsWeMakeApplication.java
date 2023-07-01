@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 @SpringBootApplication
 public class AsWeMakeApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(AsWeMakeApplication.class, args);
         log.info("application activate ~~~~~~~~~~~~~~~~~~~`");
