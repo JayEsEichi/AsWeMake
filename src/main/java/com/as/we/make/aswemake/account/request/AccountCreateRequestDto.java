@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class AccountRequestDto {
+public class AccountCreateRequestDto {
 
     @NotNull(message = "아이디는 공백을 포함할 수 없습니다.")
     @Email(regexp = "^[a-zA-Z0-9]+@[a-zA-Z]+.[a-z]+${4,12}$", message = "이메일 형식에 맞지 않습니다.")

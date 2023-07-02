@@ -2,12 +2,14 @@ package com.as.we.make.aswemake;
 
 import com.as.we.make.aswemake.account.controller.AccountController;
 import com.as.we.make.aswemake.account.repository.AccountRepository;
-import com.as.we.make.aswemake.account.request.AccountRequestDto;
+import com.as.we.make.aswemake.account.request.AccountCreateRequestDto;
+import com.as.we.make.aswemake.account.request.AccountLoginRequestDto;
 import com.as.we.make.aswemake.account.response.AccountResponseDto;
 import com.as.we.make.aswemake.account.service.AccountService;
 import com.as.we.make.aswemake.share.ResponseBody;
 import com.as.we.make.aswemake.share.StatusCode;
 import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,17 +54,17 @@ public class AccountControllerTest {
     @Test
     void createAccountTest() throws Exception {
         // given
-        AccountRequestDto accountRequestDto = AccountRequestDto.builder()
+        AccountCreateRequestDto accountCreateRequestDto = AccountCreateRequestDto.builder()
                 .accountEmail("mart@naver.com")
                 .accountPwd("mart9999!!!!")
                 .authority("mart")
                 .build();
 
-        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, accountResponseDto(accountRequestDto)), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, accountCreateResponseDto(accountCreateRequestDto)), HttpStatus.OK))
                 .when(accountService)
-                .createAccount(any(AccountRequestDto.class));
+                .createAccount(any(AccountCreateRequestDto.class));
 
-        String accountRequestInfo = new Gson().toJson(accountRequestDto);
+        String accountRequestInfo = new Gson().toJson(accountCreateRequestDto);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -74,18 +77,57 @@ public class AccountControllerTest {
         ResultActions resultActionsThen = resultActions
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.accountEmail").value(accountRequestDto.getAccountEmail()))
-                .andExpect(jsonPath("$.data.authority").value(accountRequestDto.getAuthority()));
+                .andExpect(jsonPath("$.data.accountEmail").value(accountCreateRequestDto.getAccountEmail()))
+                .andExpect(jsonPath("$.data.authority").value(accountCreateRequestDto.getAuthority()));
+
+        System.out.println(resultActionsThen);
+    }
+
+    @DisplayName("로그인 Controller 테스트")
+    @Test
+    void loginAccountTest() throws Exception {
+        // given
+        AccountLoginRequestDto accountLoginRequestDto = AccountLoginRequestDto.builder()
+                .accountEmail("mart@naver.com")
+                .accountPwd("mart9999!!!!")
+                .build();
+
+        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, accountLoginResponseDto(accountLoginRequestDto)), HttpStatus.OK))
+                .when(accountService)
+                .loginAccount(any(AccountLoginRequestDto.class), any(HttpServletResponse.class));
+
+        String accountLoginRequestInfo = new Gson().toJson(accountLoginRequestDto);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post("/awm/account/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(accountLoginRequestInfo));
+
+        // then
+        ResultActions resultActionsThen = resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.accountEmail").value(accountLoginRequestDto.getAccountEmail()));
 
         System.out.println(resultActionsThen);
     }
 
 
-    // 정사적으로 반환되었을 경우의 데이터 Dto
-    private AccountResponseDto accountResponseDto(AccountRequestDto accountRequestDto) {
+    // 정상적으로 반환되었을 경우의 데이터 Dto
+    private AccountResponseDto accountCreateResponseDto(AccountCreateRequestDto accountCreateRequestDto) {
         return AccountResponseDto.builder()
-                .accountEmail(accountRequestDto.getAccountEmail())
-                .authority(accountRequestDto.getAuthority())
+                .accountEmail(accountCreateRequestDto.getAccountEmail())
+                .authority(accountCreateRequestDto.getAuthority())
+                .build();
+    }
+
+    // 로그인 정상 반환 데이터 Dto
+    private AccountResponseDto accountLoginResponseDto(AccountLoginRequestDto accountLoginRequestDto) {
+        return AccountResponseDto.builder()
+                .accountEmail(accountLoginRequestDto.getAccountEmail())
+                .authority(accountLoginRequestDto.getAccountPwd())
                 .build();
     }
 }
