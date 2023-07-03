@@ -5,7 +5,7 @@ import com.as.we.make.aswemake.account.repository.AccountRepository;
 import com.as.we.make.aswemake.account.request.AccountCreateRequestDto;
 import com.as.we.make.aswemake.account.request.AccountLoginRequestDto;
 import com.as.we.make.aswemake.account.response.AccountResponseDto;
-import com.as.we.make.aswemake.exception.AccountExceptionInterface;
+import com.as.we.make.aswemake.exception.account.AccountExceptionInterface;
 import com.as.we.make.aswemake.jwt.JwtTokenProvider;
 import com.as.we.make.aswemake.jwt.domain.Token;
 import com.as.we.make.aswemake.jwt.dto.TokenDto;
@@ -95,7 +95,7 @@ public class AccountService {
         // 인증 객체에 인증 토큰을 넣어 인증 권한 발급
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // 인증 객체를 통해 발급된 토큰을 Dto 객체에 저장
-        TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);
+        TokenDto tokenDto = jwtTokenProvider.generateToken(authentication, account.getAuthority().get(0));
 
         // Response Header에 액세스 토큰, 리프레시 토큰, 토큰 만료일 input (토큰 발급)
         response.addHeader("Authorization", "Bearer " + tokenDto.getAccessToken());

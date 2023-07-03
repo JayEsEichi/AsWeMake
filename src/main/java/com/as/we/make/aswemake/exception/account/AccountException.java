@@ -1,4 +1,4 @@
-package com.as.we.make.aswemake.exception;
+package com.as.we.make.aswemake.exception.account;
 
 import com.as.we.make.aswemake.account.repository.AccountRepository;
 import com.as.we.make.aswemake.account.request.AccountCreateRequestDto;
@@ -39,6 +39,17 @@ public class AccountException implements AccountExceptionInterface {
 
         if (!accountRepository.findByAccountEmail(accountLoginRequestDto.getAccountEmail()).isPresent() ||
                 !passwordEncoder.matches(accountLoginRequestDto.getAccountPwd(), existPwd)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /** 상품 관리 계정 권한 확인 **/
+    @Override
+    public boolean checkAuthority(String authority) {
+
+        if(authority.equals("MART")){
             return true;
         }
 

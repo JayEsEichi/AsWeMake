@@ -1,6 +1,7 @@
 package com.as.we.make.aswemake.product.domain;
 
 import com.as.we.make.aswemake.account.domain.Account;
+import com.as.we.make.aswemake.share.Timestamped;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-public class Product {
+public class Product extends Timestamped {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
