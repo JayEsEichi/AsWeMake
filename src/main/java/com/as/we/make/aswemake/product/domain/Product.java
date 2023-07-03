@@ -4,14 +4,12 @@ import com.as.we.make.aswemake.account.domain.Account;
 import com.as.we.make.aswemake.share.Timestamped;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 @Getter
 @Entity
 public class Product extends Timestamped {

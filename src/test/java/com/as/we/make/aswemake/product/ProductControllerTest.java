@@ -1,21 +1,17 @@
 package com.as.we.make.aswemake.product;
 
-import com.as.we.make.aswemake.account.controller.AccountController;
-import com.as.we.make.aswemake.account.repository.AccountRepository;
-import com.as.we.make.aswemake.account.request.AccountCreateRequestDto;
-import com.as.we.make.aswemake.account.request.AccountLoginRequestDto;
-import com.as.we.make.aswemake.account.response.AccountResponseDto;
-import com.as.we.make.aswemake.account.service.AccountService;
+import com.as.we.make.aswemake.account.domain.Account;
 import com.as.we.make.aswemake.product.controller.ProductController;
+import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
-import com.as.we.make.aswemake.product.request.ProductRequestDto;
+import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
+import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.response.ProductResponseDto;
 import com.as.we.make.aswemake.product.service.ProductService;
 import com.as.we.make.aswemake.share.ResponseBody;
 import com.as.we.make.aswemake.share.StatusCode;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +28,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -63,18 +60,18 @@ public class ProductControllerTest {
     @Test
     void createProductTest() throws Exception {
         // given
-        ProductRequestDto productRequestDto = ProductRequestDto.builder()
+        ProductCreateRequestDto productCreateRequestDto = ProductCreateRequestDto.builder()
                 .productName("마우스패드")
                 .price(10000)
                 .build();
 
-        ProductResponseDto createProductDto = createProductDto(productRequestDto);
+        ProductResponseDto createProductDto = productCreateResponseDto(productCreateRequestDto);
 
         doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("상품 생성", createProductDto)), HttpStatus.OK))
                 .when(productService)
-                .createProduct(any(HttpServletRequest.class), any(ProductRequestDto.class));
+                .createProduct(any(HttpServletRequest.class), any(ProductCreateRequestDto.class));
 
-        String productRequestInfo = new Gson().toJson(productRequestDto);
+        String productRequestInfo = new Gson().toJson(productCreateRequestDto);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -88,17 +85,67 @@ public class ProductControllerTest {
         ResultActions resultActionsThen = resultActions
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.resultData.productName").value(productRequestDto.getProductName()))
-                .andExpect(jsonPath("$.data.resultData.price").value(productRequestDto.getPrice()));
+                .andExpect(jsonPath("$.data.resultData.productName").value(productCreateRequestDto.getProductName()))
+                .andExpect(jsonPath("$.data.resultData.price").value(productCreateRequestDto.getPrice()));
 
         System.out.println(resultActionsThen);
     }
 
+
+    @DisplayName("상품 수정 Controller 테스트")
+    @Test
+    void updateProductTest() throws Exception {
+        // given
+        Account account = Account.builder()
+                .accountId(3L)
+                .accountEmail("test@naver.com")
+                .accountPwd("test0000!!!!")
+                .authority(Collections.singletonList("MART"))
+                .build();
+
+        Product product = Product.builder()
+                .productId(2L)
+                .productName("테스트 상품")
+                .price(10000)
+                .account(account)
+                .build();
+
+        productRepository.save(product);
+
+        ProductUpdateRequestDto productUpdateRequestDto = ProductUpdateRequestDto.builder()
+                .productId(2L)
+                .price(90000)
+                .build();
+
+        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("상품 수정", productUpdateRequestDto)), HttpStatus.OK))
+                .when(productService)
+                .updateProduct(any(HttpServletRequest.class), any(ProductUpdateRequestDto.class));
+
+        String productUpdateRequestInfo = new Gson().toJson(productUpdateRequestDto);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.patch("/awm/product/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJ0QG5hdmVyLmNvbSIsImF1dGgiOiJNQVJUIiwiZXhwIjoxNjg4NDUxODYyfQ.Ll1hqSIX7PzsvfBF4PbgR5ilIM9SQh-f9WpWA7GAWYo")
+                        .characterEncoding("utf-8")
+                        .content(productUpdateRequestInfo));
+
+        // then
+        ResultActions resultActionsThen = resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.resultData.productId").value(productUpdateRequestDto.getProductId()))
+                .andExpect(jsonPath("$.data.resultData.price").value(productUpdateRequestDto.getPrice()));
+
+    }
+
+
     // 상품 생성 시 정상적으로 출력되어야 할 데이터
-    private ProductResponseDto createProductDto(ProductRequestDto productRequestDto){
+    private ProductResponseDto productCreateResponseDto(ProductCreateRequestDto productCreateRequestDto){
         return ProductResponseDto.builder()
-                .productName(productRequestDto.getProductName())
-                .price(productRequestDto.getPrice())
+                .productName(productCreateRequestDto.getProductName())
+                .price(productCreateRequestDto.getPrice())
                 .build();
     }
 

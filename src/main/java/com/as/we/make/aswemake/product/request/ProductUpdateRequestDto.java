@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Getter
-public class ProductRequestDto {
-    private String productName;
+public class ProductUpdateRequestDto {
+    private Long productId;
     private Integer price;
 }
