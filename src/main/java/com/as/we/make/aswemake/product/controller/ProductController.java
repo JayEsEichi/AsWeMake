@@ -1,6 +1,7 @@
 package com.as.we.make.aswemake.product.controller;
 
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
+import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.service.ProductService;
 import com.as.we.make.aswemake.share.ResponseBody;
@@ -32,6 +33,14 @@ public class ProductController {
         log.info("상품 가격 수정 api - controller : 상품 번호 = {}, 수정 가격 = {}", productUpdateRequestDto.getProductId(), productUpdateRequestDto.getPrice());
 
         return productService.updateProduct(request, productUpdateRequestDto);
+    }
+
+    // 상품 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, @RequestBody ProductDeleteRequestDto productDeleteRequestDto){
+        log.info("상품 삭제 api - controller : 상품 번호 = {}, 삭제 요청 계정 = {}", productDeleteRequestDto.getProductId(), request);
+
+        return productService.deleteProduct(request, productDeleteRequestDto);
     }
 
 }
