@@ -5,6 +5,7 @@ import com.as.we.make.aswemake.product.controller.ProductController;
 import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
+import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.response.ProductResponseDto;
 import com.as.we.make.aswemake.product.service.ProductService;
@@ -37,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("unchecked")
 @ExtendWith(MockitoExtension.class)
 public class ProductControllerTest {
 
@@ -137,6 +139,52 @@ public class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.resultData.productId").value(productUpdateRequestDto.getProductId()))
                 .andExpect(jsonPath("$.data.resultData.price").value(productUpdateRequestDto.getPrice()));
+
+    }
+
+
+    @DisplayName("상품 삭제 Controller 테스트")
+    @Test
+    void deleteProductTest() throws Exception {
+        // given
+        Account account = Account.builder()
+                .accountId(3L)
+                .accountEmail("test@naver.com")
+                .accountPwd("test0000!!!!")
+                .authority(Collections.singletonList("MART"))
+                .build();
+
+        Product product = Product.builder()
+                .productId(2L)
+                .productName("테스트 상품")
+                .price(10000)
+                .account(account)
+                .build();
+
+        productRepository.save(product);
+
+        ProductDeleteRequestDto productDeleteRequestDto = ProductDeleteRequestDto.builder()
+                .productId(2L)
+                .build();
+
+        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, "상품 삭제"), HttpStatus.OK))
+                .when(productService)
+                .deleteProduct(any(HttpServletRequest.class), any(ProductDeleteRequestDto.class));
+
+        String productDeleteRequestInfo = new Gson().toJson(productDeleteRequestDto);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/awm/product/delete")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJ0QG5hdmVyLmNvbSIsImF1dGgiOiJNQVJUIiwiZXhwIjoxNjg4NDUxODYyfQ.Ll1hqSIX7PzsvfBF4PbgR5ilIM9SQh-f9WpWA7GAWYo")
+                        .characterEncoding("utf-8")
+                        .content(productDeleteRequestInfo));
+
+        // then
+        ResultActions resultActionsThen = resultActions
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 

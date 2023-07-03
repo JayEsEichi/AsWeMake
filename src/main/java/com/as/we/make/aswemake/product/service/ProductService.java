@@ -7,6 +7,7 @@ import com.as.we.make.aswemake.jwt.JwtTokenProvider;
 import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
+import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.response.ProductResponseDto;
 import com.as.we.make.aswemake.share.ResponseBody;
@@ -69,7 +70,7 @@ public class ProductService {
     }
 
 
-    // 상품 가격 수정
+    /** 상품 가격 수정 **/
     @Transactional
     public ResponseEntity<ResponseBody> updateProduct(HttpServletRequest request, ProductUpdateRequestDto productUpdateRequestDto){
 
@@ -99,6 +100,34 @@ public class ProductService {
                 .build();
 
         return new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("정상적으로 수정되었습니다.", productResponseDto)), HttpStatus.OK);
+    }
+
+
+    /** 상품 삭제 **/
+    @Transactional
+    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, ProductDeleteRequestDto productDeleteRequestDto){
+
+        // 요청 토큰 확인
+        if(!tokenExceptionInterface.checkToken(request)){
+            return new ResponseEntity<>(new ResponseBody(StatusCode.NOT_CORRECT_TOKEN, null), HttpStatus.BAD_REQUEST);
+        }
+
+        // 로그인 하여 ContextHolder에 저장된 인증된 유저 호출
+        Account account = jwtTokenProvider.getMemberFromAuthentication();
+
+        // MART 권한을 가진 계정만 상품 관리 가능
+        if(!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))){
+            return new ResponseEntity<>(new ResponseBody(StatusCode.CANNOT_POSSIBLE_AUTHORITY, null), HttpStatus.BAD_REQUEST);
+        }
+
+        // 삭제할 상품을 만든 계정이 맞는지 확인
+        productRepository.findByAccountAndProductId(account, productDeleteRequestDto.getProductId())
+                .orElseThrow(() -> new NullPointerException("삭제 요청한 계정이 생성한 상품이 아니라서 삭제할 수 없습니다."));
+
+        // 상품 삭제
+        productRepository.deleteByAccountAndProductId(account, productDeleteRequestDto.getProductId());
+
+        return new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, "정상적으로 삭제되었습니다."), HttpStatus.OK);
     }
 
 
