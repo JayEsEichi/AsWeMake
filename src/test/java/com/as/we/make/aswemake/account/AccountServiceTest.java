@@ -1,10 +1,10 @@
-package com.as.we.make.aswemake;
+package com.as.we.make.aswemake.account;
 
 import com.as.we.make.aswemake.account.repository.AccountRepository;
 import com.as.we.make.aswemake.account.request.AccountCreateRequestDto;
 import com.as.we.make.aswemake.account.request.AccountLoginRequestDto;
 import com.as.we.make.aswemake.account.service.AccountService;
-import com.as.we.make.aswemake.exception.AccountExceptionInterface;
+import com.as.we.make.aswemake.exception.account.AccountExceptionInterface;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;

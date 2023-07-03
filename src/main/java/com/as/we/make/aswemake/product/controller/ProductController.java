@@ -20,7 +20,7 @@ public class ProductController {
     // 상품 생성
     @PostMapping("/create")
     public ResponseEntity<ResponseBody> createProduct(HttpServletRequest request, @RequestBody ProductRequestDto productRequestDto){
-        log.info("상품 생성 api - controller : 상품명 = {], 상품 가격 = {}, 생성자 = {}", productRequestDto.getProductName(), productRequestDto.getPrice(), request);
+        log.info("상품 생성 api - controller : 상품명 = {}, 상품 가격 = {}, 생성자 = {}", productRequestDto.getProductName(), productRequestDto.getPrice(), request);
 
         return productService.createProduct(request, productRequestDto);
     }

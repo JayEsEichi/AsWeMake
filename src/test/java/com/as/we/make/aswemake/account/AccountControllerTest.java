@@ -1,4 +1,4 @@
-package com.as.we.make.aswemake;
+package com.as.we.make.aswemake.account;
 
 import com.as.we.make.aswemake.account.controller.AccountController;
 import com.as.we.make.aswemake.account.repository.AccountRepository;
