@@ -21,9 +21,18 @@ public class OrderController {
 
     // 상품 주문
     @PostMapping("/ordering")
-    public ResponseEntity<ResponseBody> orderProduct(HttpServletRequest request, @RequestBody List<OrderRequestDto> orderRequestDtos){
+    public ResponseEntity<ResponseBody> orderProduct(HttpServletRequest request, @RequestPart List<OrderRequestDto> orderRequestDtos){
         log.info("상품 주문 api - controller : 주문자 = {}, 주문 상품 개수 = {}", request,orderRequestDtos.size());
 
         return orderService.orderProduct(request, orderRequestDtos);
+    }
+
+
+    // 주문할 상품들 총 금액 계산 및 조회
+    @GetMapping("/calculate")
+    public ResponseEntity<ResponseBody> calculateTotalOrderPrice(@RequestParam Long ordersId){
+        log.info("주문 상품들 총 금액 계산 조회 api - controller : 조회 주문 = {}", ordersId);
+
+        return orderService.calculateTotalOrderPrice(ordersId);
     }
 }
