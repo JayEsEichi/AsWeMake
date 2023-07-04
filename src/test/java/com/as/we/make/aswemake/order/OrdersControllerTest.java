@@ -1,11 +1,13 @@
 package com.as.we.make.aswemake.order;
 
 import com.as.we.make.aswemake.order.controller.OrderController;
+import com.as.we.make.aswemake.order.domain.Orders;
 import com.as.we.make.aswemake.order.repository.OrderRepository;
 import com.as.we.make.aswemake.order.request.OrderRequestDto;
 import com.as.we.make.aswemake.order.response.OrderProductResponseVo;
 import com.as.we.make.aswemake.order.response.OrderResponseDto;
 import com.as.we.make.aswemake.order.service.OrderService;
+import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.share.ResponseBody;
 import com.as.we.make.aswemake.share.StatusCode;
 import com.google.gson.Gson;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -106,6 +109,67 @@ public class OrdersControllerTest {
 
         System.out.println(resultActionsThen);
     }
+
+
+    @DisplayName("주문 내역 상품들 총 금액 계산 및 조회 controller 테스트")
+    @Test
+    void calculateOrderPrice() throws Exception {
+
+        // given
+        HashMap<Product, Integer> orderProductList = new HashMap<>();
+        List<Product> orderProductsInfoList = new ArrayList<>();
+        int no = 1;
+        int totalPrice = 0;
+
+        // 상품들 주문 저장
+        for (OrderRequestDto productRequest : orderRequestDtos()) {
+
+            // 주문할 상품 조회
+            Product orderProduct = Product.builder()
+                    .productId(productRequest.getProductId())
+                    .price(5000)
+                    .productName("테스트 상품" + no)
+                    .build();
+
+            totalPrice += orderProduct.getPrice() * productRequest.getProductCount();
+            no += 1;
+
+            orderProductList.put(orderProduct, productRequest.getProductCount());
+            orderProductsInfoList.add(orderProduct);
+        }
+
+        // 주문 정보 엔티티 input
+        Orders orders = Orders.builder()
+                .ordersId(1L)
+                .deliveryPay(5000) // 배달비 5000원 고정
+                .products(orderProductList)
+                .build();
+
+        orderRepository.save(orders);
+
+        totalPrice += orders.getDeliveryPay();
+
+        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("요청한 주문의 총 금액", 10000)), HttpStatus.OK))
+                .when(orderService)
+                .calculateTotalOrderPrice(any(Long.class));
+
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get("/awm/order/calculate?ordersId=" + orders.getOrdersId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8"));
+
+        // then
+        ResultActions resultActionsThen = resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.resultData").value(totalPrice));
+
+        System.out.println(resultActionsThen);
+
+    }
+
 
     // 다중 상품 주문 등록 요청 (가정)
     private List<OrderRequestDto> orderRequestDtos(){

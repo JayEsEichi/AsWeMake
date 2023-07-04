@@ -18,7 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 
@@ -30,6 +33,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+//@DataJpaTest
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SuppressWarnings("unchecked")
 @ExtendWith(MockitoExtension.class)
 public class OrdersServiceTest {
@@ -82,8 +87,6 @@ public class OrdersServiceTest {
             productRepository.save(product);
         }
 
-//        System.out.println(product.getProductId());
-
         HashMap<Product, Integer> orderProductList = new HashMap<>();
         List<OrderProductResponseVo> orderProductsInfoList = new ArrayList<>();
 
@@ -120,6 +123,52 @@ public class OrdersServiceTest {
 
         // 계정 생성 후 반환되는 상태 코드 값
         int statusCode = orderService.orderProduct(request, orderRequestDtos()).getBody().getStatusCode();
+
+        // then
+        // 상태 코드 값이 정상처리된 200인지 확인
+        assertThat(statusCode).isEqualTo(200);
+
+    }
+
+    @DisplayName("주문 상품 내역 총 금액 계산 및 조회 Service 테스트")
+    @Test
+    void calculateOrderPrice() throws Exception {
+
+        // given
+        HashMap<Product, Integer> orderProductList = new HashMap<>();
+        List<Product> orderProductsInfoList = new ArrayList<>();
+        int no = 1;
+
+        // 상품들 주문 저장
+        for (OrderRequestDto productRequest : orderRequestDtos()) {
+
+            // 주문할 상품 조회
+            Product orderProduct = Product.builder()
+                    .productId(productRequest.getProductId())
+                    .price(5000)
+                    .productName("테스트 상품" + no)
+                    .build();
+
+            productRepository.save(orderProduct);
+
+            no += 1;
+
+            orderProductList.put(orderProduct, productRequest.getProductCount());
+            orderProductsInfoList.add(orderProduct);
+        }
+
+        // 주문 정보 엔티티 input
+        Orders orders = Orders.builder()
+                .ordersId(1L)
+                .deliveryPay(5000) // 배달비 5000원 고정
+                .products(orderProductList)
+                .build();
+
+        orderRepository.save(orders);
+
+
+        // 계정 생성 후 반환되는 상태 코드 값
+        int statusCode = orderService.calculateTotalOrderPrice(1L).getBody().getStatusCode();
 
         // then
         // 상태 코드 값이 정상처리된 200인지 확인
