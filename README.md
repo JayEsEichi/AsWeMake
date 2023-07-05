@@ -103,7 +103,30 @@
 ##
 
 ### 🗂️ 실행 방법
+!! 개발 툴은 IntellJ로 진행하였습니다.
+#### (1) 프로젝트를 clone
+#### (2) application.properties 파일 설정  
+![ddd](https://github.com/JayEsEichi/AsWeMake/assets/96898059/1efe2b61-e6b3-42f1-abe0-895606de1290)
+MySQL 드라이버 설정과 datasource.url, DB 계정명, DB 비밀번호와 같은 전체적인 MySQL 설정을 해줍니다.  
+JWT를 사용하고 있기 때문에 JWT 암호화를 위한 secret key도 넣어주었습니다.
+#### (3) MySQL 데이터 베이스 연동  
+![dfsfd](https://github.com/JayEsEichi/AsWeMake/assets/96898059/802b5727-c3e7-4a5d-962d-726b258dcb22)
+오른쪽 사이트 탭에 보이는 Database 탭을 클릭하고 + 버튼을 눌러 MySQL 드라이버를 찾아 선택해줍니다.  
+`Name` : mysql 드라이버 명을 입력해줍니다.  
+`Host` : 로컬에서 진행하는 것이니만큼 localhost 와 포트 번호 3306으로 지정해줍니다.  
+`User` : 데이터 베이스 아이디를 입력합니다.  
+`Password` : 데이터 베이스 비밀번호를 입력합니다.  
+`Database` : application.properties 파일의 url 부분에 기입했던 데이터베이스 명과 동일한 데이터베이스를 입력해줍니다.  
+#### (4) Application 실행
+어플리케이션을 실행해줍니다.  
+이제 실행이 된 상태에서 시나리오에 기입한 내용 순서대로 api를 호출하여 서비스를 실행하면 됩니다.
+서비스 실행 테스트는 PostMan으로 진행하였습니다.
 
+##
+
+### API 명세
+http://localhost:8080/swagger-ui/index.html#/  
+(어플리케이션을 정상적으로 실행시킨 상태에서 위의 주소로 접속하게 되면 Swagger를 통한 API 명세를 확인할 수 있습니다.)
 
 ##
 
