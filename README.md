@@ -120,7 +120,17 @@ JWT를 사용하고 있기 때문에 JWT 암호화를 위한 secret key도 넣�
 #### (4) Application 실행
 어플리케이션을 실행해줍니다.  
 이제 실행이 된 상태에서 시나리오에 기입한 내용 순서대로 api를 호출하여 서비스를 실행하면 됩니다.  
-서비스 실행 테스트는 PostMan으로 진행하였습니다.
+서비스 실행 테스트는 PostMan으로 진행하였습니다.  
+#### (5) PostMan 서비스 실행  
+![1](https://github.com/JayEsEichi/AsWeMake/assets/96898059/e7cb145a-f4b4-43bd-ab3a-2085817f1570)  
+postman에 import를 눌러줍니다.  
+![2](https://github.com/JayEsEichi/AsWeMake/assets/96898059/2dd1d6fe-5512-4646-8e55-fc20b1a48542)  
+첨부드린 json 파일을 그대로 import 해줍니다.  
+![3](https://github.com/JayEsEichi/AsWeMake/assets/96898059/0517a72b-2588-47ca-8dbe-800af56d8ebe)  
+collection이 그대로 생성되게 되며 어플리케이션 실행 후 각 서비스를 호출하여 시나리오 대로 실행하면 됩니다.
+
+
+
 
 ##
 
