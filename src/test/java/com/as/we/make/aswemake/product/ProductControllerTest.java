@@ -3,7 +3,9 @@ package com.as.we.make.aswemake.product;
 import com.as.we.make.aswemake.account.domain.Account;
 import com.as.we.make.aswemake.product.controller.ProductController;
 import com.as.we.make.aswemake.product.domain.Product;
+import com.as.we.make.aswemake.product.domain.ProductUpdateDetails;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
+import com.as.we.make.aswemake.product.repository.ProductUpdateDetailsRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
 import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
@@ -29,6 +31,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
@@ -51,6 +55,9 @@ public class ProductControllerTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private ProductUpdateDetailsRepository productUpdateDetailsRepository;
+
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -67,7 +74,7 @@ public class ProductControllerTest {
                 .price(10000)
                 .build();
 
-        ProductResponseDto createProductDto = productCreateResponseDto(productCreateRequestDto);
+        ProductResponseDto createProductDto = productResponseDto(productCreateRequestDto);
 
         doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("상품 생성", createProductDto)), HttpStatus.OK))
                 .when(productService)
@@ -188,9 +195,64 @@ public class ProductControllerTest {
 
     }
 
+    @DisplayName("상품 조회 Controller 테스트")
+    @Test
+    void getProductTest() throws Exception {
+        // given
+        Product product = Product.builder()
+                .productId(1L)
+                .productName("테스트 상품")
+                .price(10000)
+                .build();
+
+        productRepository.save(product);
+
+        ProductUpdateDetails productUpdateDetails = ProductUpdateDetails.builder()
+                .productUpdateDetailsId(1L)
+                .price(2000)
+                .productName(product.getProductName())
+                .updateTime(LocalDateTime.now())
+                .build();
+
+        productUpdateDetailsRepository.save(productUpdateDetails);
+
+        Thread.sleep(30);
+
+        ProductUpdateDetails productUpdateDetails2 = ProductUpdateDetails.builder()
+                .productUpdateDetailsId(1L)
+                .price(9000)
+                .productName(product.getProductName())
+                .updateTime(LocalDateTime.now())
+                .build();
+
+        productUpdateDetailsRepository.save(productUpdateDetails2);
+
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                .productName(product.getProductName())
+                .price(productUpdateDetails2.getPrice())
+                .build();
+
+        doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("조회 테스트", productResponseDto)), HttpStatus.OK))
+                .when(productService)
+                .getProduct(any(Long.class), any(String.class));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get("/awm/product/get?productId=" + 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8"));
+
+        // then
+        ResultActions resultActionsThen = resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.resultData.price").value(productUpdateDetails2.getPrice()));
+
+    }
+
 
     // 상품 생성 시 정상적으로 출력되어야 할 데이터
-    private ProductResponseDto productCreateResponseDto(ProductCreateRequestDto productCreateRequestDto){
+    private ProductResponseDto productResponseDto(ProductCreateRequestDto productCreateRequestDto) {
         return ProductResponseDto.builder()
                 .productName(productCreateRequestDto.getProductName())
                 .price(productCreateRequestDto.getPrice())
@@ -199,7 +261,7 @@ public class ProductControllerTest {
 
 
     // 테스트 결과 확인 데이터
-    private LinkedHashMap<String, Object> resultSet(String message, Object data){
+    private LinkedHashMap<String, Object> resultSet(String message, Object data) {
 
         LinkedHashMap<String, Object> resultSet = new LinkedHashMap<>();
         resultSet.put("resultMessage", message);
