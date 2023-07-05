@@ -1,13 +1,18 @@
 package com.as.we.make.aswemake.order.service;
 
 import com.as.we.make.aswemake.account.domain.Account;
+import com.as.we.make.aswemake.coupon.domain.Coupon;
+import com.as.we.make.aswemake.coupon.repository.CouponRepository;
+import com.as.we.make.aswemake.exception.order.OrderExceptionInterface;
 import com.as.we.make.aswemake.exception.token.TokenExceptionInterface;
 import com.as.we.make.aswemake.jwt.JwtTokenProvider;
 import com.as.we.make.aswemake.order.domain.Orders;
 import com.as.we.make.aswemake.order.repository.OrderRepository;
 import com.as.we.make.aswemake.order.request.OrderRequestDto;
+import com.as.we.make.aswemake.pay.request.PayOrderRequestDto;
 import com.as.we.make.aswemake.order.response.OrderProductResponseVo;
 import com.as.we.make.aswemake.order.response.OrderResponseDto;
+import com.as.we.make.aswemake.pay.response.PayResponseDto;
 import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.share.ResponseBody;
@@ -17,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -30,7 +36,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     /**
-     * 상품 주문
+     * 상품 주문 등록
      **/
     public ResponseEntity<ResponseBody> orderProduct(HttpServletRequest request, List<OrderRequestDto> orderRequestDtos) {
 
@@ -72,6 +78,7 @@ public class OrderService {
         // 주문 정보 엔티티 정보 기입
         Orders orders = Orders.builder()
                 .deliveryPay(5000) // 배달비 5000원 고정
+                .totalPrice(0) // 초기 주문 등록은 장바구니 처럼 등록, 즉, 담아놓기만 한 상태이므로 총 금액은 처음에 0원
                 .account(account)
                 .products(orderProductList)
                 .build();
@@ -91,8 +98,9 @@ public class OrderService {
 
 
     /**
-     * 주문할 상품들 총 금액 계산 및 조회
+     * 주문할 상품들 총 금액 계산 및 조회 (주문 내용 확정 - 총 금액 업데이트)
      **/
+    @Transactional
     public ResponseEntity<ResponseBody> calculateTotalOrderPrice(Long ordersId) {
 
         // 총액을 구하고자 하는 주문 내역 조회
@@ -109,9 +117,11 @@ public class OrderService {
             totalPrice += eachProduct.getPrice() * orderProducts.get(eachProduct);
         }
 
+        // 현 api 는 주문 등록된 내용들을 계산 및 조회하면서 확정 짓는 api 이므로 총 금액을 Orders 엔티티에 반영
+        order.setTotalPrice(totalPrice);
+
         return new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet("요청한 주문의 총 금액", totalPrice)), HttpStatus.OK);
     }
-
 
     // 최종적으로 결과를 반환하기 위한 method
     private LinkedHashMap<String, Object> resultSet(String message, Object responseData) {

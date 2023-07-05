@@ -1,6 +1,7 @@
 package com.as.we.make.aswemake.order.controller;
 
 import com.as.we.make.aswemake.order.request.OrderRequestDto;
+import com.as.we.make.aswemake.pay.request.PayOrderRequestDto;
 import com.as.we.make.aswemake.order.service.OrderService;
 import com.as.we.make.aswemake.share.ResponseBody;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,8 +29,8 @@ public class OrderController {
     }
 
 
-    // 주문할 상품들 총 금액 계산 및 조회
-    @GetMapping("/calculate")
+    // 주문할 상품들 총 금액 계산 및 조회 (주문 내용 확정 - 총 금액 업데이트)
+    @PatchMapping("/calculate")
     public ResponseEntity<ResponseBody> calculateTotalOrderPrice(@RequestParam Long ordersId){
         log.info("주문 상품들 총 금액 계산 조회 api - controller : 조회 주문 = {}", ordersId);
 
