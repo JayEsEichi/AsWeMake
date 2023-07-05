@@ -32,7 +32,8 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/awm/account/**",
-                                "/awm/order/calculate").permitAll()
+                                "/awm/order/calculate",
+                                "/awm/product/get").permitAll()
                         // product api 경로에는 MART 권한을 가진 계정만이 접근가능하게 하는 옵션. 하지만 USER 권한을 가진 계정이 접근했을 경우의 예외처리를 확인하기 위해 주석처리
                         // .requestMatchers("/awm/product/**").hasAuthority("MART")
                         .anyRequest().authenticated()

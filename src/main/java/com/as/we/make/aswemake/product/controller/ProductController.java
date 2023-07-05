@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/awm/product")
@@ -41,6 +43,14 @@ public class ProductController {
         log.info("상품 삭제 api - controller : 상품 번호 = {}, 삭제 요청 계정 = {}", productDeleteRequestDto.getProductId(), request);
 
         return productService.deleteProduct(request, productDeleteRequestDto);
+    }
+
+    // 상품 조회
+    @GetMapping("/get")
+    public ResponseEntity<ResponseBody> getProduct(@RequestParam Long productId, @RequestParam(required = false) String getDateTime){
+        log.info("상품 조회 api - controller : 조회 상품 id = {}", productId);
+
+        return productService.getProduct(productId, getDateTime);
     }
 
 }

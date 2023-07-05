@@ -5,7 +5,9 @@ import com.as.we.make.aswemake.exception.account.AccountExceptionInterface;
 import com.as.we.make.aswemake.exception.token.TokenExceptionInterface;
 import com.as.we.make.aswemake.jwt.JwtTokenProvider;
 import com.as.we.make.aswemake.product.domain.Product;
+import com.as.we.make.aswemake.product.domain.ProductUpdateDetails;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
+import com.as.we.make.aswemake.product.repository.ProductUpdateDetailsRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
 import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
@@ -21,7 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,14 +36,17 @@ public class ProductService {
     private final TokenExceptionInterface tokenExceptionInterface;
     private final AccountExceptionInterface accountExceptionInterface;
     private final ProductRepository productRepository;
+    private final ProductUpdateDetailsRepository productUpdateDetailsRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    /** 상품 생성 **/
-    public ResponseEntity<ResponseBody> createProduct(HttpServletRequest request, ProductCreateRequestDto productCreateRequestDto){
+    /**
+     * 상품 생성
+     **/
+    public ResponseEntity<ResponseBody> createProduct(HttpServletRequest request, ProductCreateRequestDto productCreateRequestDto) {
 
         // 요청 토큰 확인
-        if(!tokenExceptionInterface.checkToken(request)){
+        if (!tokenExceptionInterface.checkToken(request)) {
             return new ResponseEntity<>(new ResponseBody(StatusCode.NOT_CORRECT_TOKEN, null), HttpStatus.BAD_REQUEST);
         }
 
@@ -46,7 +54,7 @@ public class ProductService {
         Account account = jwtTokenProvider.getMemberFromAuthentication();
 
         // MART 권한을 가진 계정만 상품 관리 가능
-        if(!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))){
+        if (!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))) {
             return new ResponseEntity<>(new ResponseBody(StatusCode.CANNOT_POSSIBLE_AUTHORITY, null), HttpStatus.BAD_REQUEST);
         }
 
@@ -55,10 +63,22 @@ public class ProductService {
                 .productName(productCreateRequestDto.getProductName())
                 .price(productCreateRequestDto.getPrice())
                 .account(account)
+//                .productDetails().
                 .build();
 
         // 상품 생성
         productRepository.save(product);
+
+        // 상품을 생성하면 상품 정보 이력에도 저잦ㅇ
+        ProductUpdateDetails productUpdateDetails = ProductUpdateDetails.builder()
+                .price(product.getPrice()) // 생성했을 당시의 가격
+                .productName(product.getProductName()) // 생성했을 당시의 이름
+                .updateTime(product.getCreatedAt()) // 생성했을 당시의 날짜
+                .product(product)
+                .build();
+
+        // 상품 정보 이력 저장
+        productUpdateDetailsRepository.save(productUpdateDetails);
 
         // 생성 확인을 위한 ResponseDto 객체에 정보 저장
         ProductResponseDto productResponseDto = ProductResponseDto.builder()
@@ -70,12 +90,14 @@ public class ProductService {
     }
 
 
-    /** 상품 가격 수정 **/
+    /**
+     * 상품 가격 수정
+     **/
     @Transactional
-    public ResponseEntity<ResponseBody> updateProduct(HttpServletRequest request, ProductUpdateRequestDto productUpdateRequestDto){
+    public ResponseEntity<ResponseBody> updateProduct(HttpServletRequest request, ProductUpdateRequestDto productUpdateRequestDto) {
 
         // 요청 토큰 확인
-        if(!tokenExceptionInterface.checkToken(request)){
+        if (!tokenExceptionInterface.checkToken(request)) {
             return new ResponseEntity<>(new ResponseBody(StatusCode.NOT_CORRECT_TOKEN, null), HttpStatus.BAD_REQUEST);
         }
 
@@ -83,7 +105,7 @@ public class ProductService {
         Account account = jwtTokenProvider.getMemberFromAuthentication();
 
         // MART 권한을 가진 계정만 상품 관리 가능
-        if(!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))){
+        if (!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))) {
             return new ResponseEntity<>(new ResponseBody(StatusCode.CANNOT_POSSIBLE_AUTHORITY, null), HttpStatus.BAD_REQUEST);
         }
 
@@ -92,6 +114,17 @@ public class ProductService {
 
         // 가격 수정
         updateProduct.setPrice(productUpdateRequestDto.getPrice());
+
+        // 상품 변경 이력 정보 추가
+        ProductUpdateDetails productUpdateDetails = ProductUpdateDetails.builder()
+                .price(updateProduct.getPrice())
+                .productName(updateProduct.getProductName())
+                .updateTime(LocalDateTime.now())
+                .product(updateProduct)
+                .build();
+
+        // 추가된 상품 이력 정보 저장
+        productUpdateDetailsRepository.save(productUpdateDetails);
 
         // 수정 확인을 위한 ResponseDto 객체에 정보 저장
         ProductResponseDto productResponseDto = ProductResponseDto.builder()
@@ -103,12 +136,14 @@ public class ProductService {
     }
 
 
-    /** 상품 삭제 **/
+    /**
+     * 상품 삭제
+     **/
     @Transactional
-    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, ProductDeleteRequestDto productDeleteRequestDto){
+    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, ProductDeleteRequestDto productDeleteRequestDto) {
 
         // 요청 토큰 확인
-        if(!tokenExceptionInterface.checkToken(request)){
+        if (!tokenExceptionInterface.checkToken(request)) {
             return new ResponseEntity<>(new ResponseBody(StatusCode.NOT_CORRECT_TOKEN, null), HttpStatus.BAD_REQUEST);
         }
 
@@ -116,7 +151,7 @@ public class ProductService {
         Account account = jwtTokenProvider.getMemberFromAuthentication();
 
         // MART 권한을 가진 계정만 상품 관리 가능
-        if(!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))){
+        if (!accountExceptionInterface.checkAuthority(account.getAuthority().get(0))) {
             return new ResponseEntity<>(new ResponseBody(StatusCode.CANNOT_POSSIBLE_AUTHORITY, null), HttpStatus.BAD_REQUEST);
         }
 
@@ -128,6 +163,63 @@ public class ProductService {
         productRepository.deleteByAccountAndProductId(account, productDeleteRequestDto.getProductId());
 
         return new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, "정상적으로 삭제되었습니다."), HttpStatus.OK);
+    }
+
+
+    /**
+     * 상품 조회
+     **/
+    public ResponseEntity<ResponseBody> getProduct(Long productId, String getDateTime) {
+
+        // 조회하고자 하는 상품 조회
+        Product getProduct = productRepository.findByProductId(productId)
+                .orElseThrow(() -> new NullPointerException("존재하지 않는 상품입니다."));
+
+        // 조회 상품의 정보 이력들 조회 (가장 최신의 날짜부터 나오도록 정렬 기준을 desc로 지정)
+        List<ProductUpdateDetails> productDetailsList = productUpdateDetailsRepository.findAllByProductOrderByUpdateTimeDesc(getProduct)
+                .orElseThrow(() -> new NullPointerException("해당 상품에 대한 이력이 없습니다."));
+
+        // 조회 시점의 가격
+        int price = 0;
+
+        // 조회하고자 하는 특정 시점이 존재할 경우
+        if (getDateTime != null) {
+            // 특정 시점 날짜 데이터를 비교하기 위해 format을 돌려 localdatetime으로 변환
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+            LocalDateTime viewDateTime = LocalDateTime.parse(getDateTime, formatter);
+
+            // 조회한 상품 정보 이력들 조회
+            for (int i = 0; i < productDetailsList.size(); i++) {
+
+                // 만약 특정 조회 시점과 완전히 일치하는 날짜라면 그 날짜의 데이터값을 가져옴
+                if(productDetailsList.get(i).getUpdateTime().isEqual(viewDateTime)){
+                    price = productDetailsList.get(i).getPrice();
+                    break;
+                }
+
+                // 가장 오래된 상품 정보 이력이 아닐 경우
+                if (i != productDetailsList.size() - 1) {
+                    // 조회한 정보 이력들 중에서 조회하고자 하는 특정 조회 시점의 날짜보다 최신인 이력이고 다음 정보이력의 날짜가 조회 시점의 날짜보다 이전이면 그 시점의 가격 조회
+                    if (productDetailsList.get(i).getUpdateTime().isAfter(viewDateTime) && productDetailsList.get(i + 1).getUpdateTime().isBefore(viewDateTime)) {
+                        price = productDetailsList.get(i + 1).getPrice();
+                        break;
+                    }
+                }
+            }
+
+        // 특정 시점이 존재하지 않을 경우 가장 최신 시점의 가격을 조회
+        } else {
+            price = productDetailsList.get(0).getPrice();
+            getDateTime = "최근";
+        }
+
+        // 결과를 확인하기 위한 ResponseDto 객체 생성
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                .productName(getProduct.getProductName())
+                .price(price)
+                .build();
+
+        return new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, resultSet(getProduct.getProductName() + " 상품의 " + getDateTime + " 시점의 가격은 " + price + "원 입니다.", productResponseDto)), HttpStatus.OK);
     }
 
 
