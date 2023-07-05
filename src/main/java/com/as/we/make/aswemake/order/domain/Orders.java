@@ -4,16 +4,14 @@ import com.as.we.make.aswemake.account.domain.Account;
 import com.as.we.make.aswemake.product.domain.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Getter
 @Builder
 @Entity
@@ -26,13 +24,16 @@ public class Orders {
     @Column(nullable = false)
     private Integer deliveryPay;
 
+    @Column
+    private Integer totalPrice;
+
     @ElementCollection
     @MapKeyColumn(name = "productId")
     @Column(name = "productCount")
     private Map<Product, Integer> products = new HashMap<>();
 
     @JsonIgnore
-    @JoinColumn(name = "orderAccountId")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountId")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Account account;
 }
