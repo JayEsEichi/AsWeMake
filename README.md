@@ -163,13 +163,13 @@
   ### 상품 삭제
   #### [ Request ]  
   ![상품 삭제 request 1](https://github.com/JayEsEichi/AsWeMake/assets/96898059/4de2c36c-7b16-419d-af53-b0d7ebd4f486)  
-  ![상품 삭제 request 2](https://github.com/JayEsEichi/AsWeMake/assets/96898059/3bc6a9bd-cf3c-4ab4-b328-440b6acc01a6)  
+  ![1](https://github.com/JayEsEichi/AsWeMake/assets/96898059/cdff88e0-5bf4-4f6b-a9d0-d1531ebd8de6)
   - url : /awm/product/delete
   - method : DELETE
   - HTTP Header :  
     - Authorization : JWT 액세스 토큰
     - Refresh-Token : JWT 리프레시 토큰
-  - 요청 데이터 형식 : request body (json)
+  - 요청 데이터 형식 : request param 
     - productId : 삭제할 상품의 id
    
   #### [ Response ]  
@@ -347,7 +347,7 @@ http://localhost:8080/swagger-ui/index.html#/
   
 </details>
 <details>
-<summary>AccountAithority</summary>
+<summary>AccountAuthority</summary>
   
   - `accountAccountId` : 계정 고유 id
   - `authority` : 계정 권한
