@@ -9,7 +9,6 @@ import com.as.we.make.aswemake.product.domain.ProductUpdateDetails;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.product.repository.ProductUpdateDetailsRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
-import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.response.ProductResponseDto;
 import com.as.we.make.aswemake.share.ResponseBody;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -140,7 +138,7 @@ public class ProductService {
      * 상품 삭제
      **/
     @Transactional
-    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, ProductDeleteRequestDto productDeleteRequestDto) {
+    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, Long productId) {
 
         // 요청 토큰 확인
         if (!tokenExceptionInterface.checkToken(request)) {
@@ -156,11 +154,11 @@ public class ProductService {
         }
 
         // 삭제할 상품을 만든 계정이 맞는지 확인
-        productRepository.findByAccountAndProductId(account, productDeleteRequestDto.getProductId())
+        productRepository.findByAccountAndProductId(account, productId)
                 .orElseThrow(() -> new NullPointerException("삭제 요청한 계정이 생성한 상품이 아니라서 삭제할 수 없습니다."));
 
         // 상품 삭제
-        productRepository.deleteByAccountAndProductId(account, productDeleteRequestDto.getProductId());
+        productRepository.deleteByAccountAndProductId(account, productId);
 
         return new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, "정상적으로 삭제되었습니다."), HttpStatus.OK);
     }

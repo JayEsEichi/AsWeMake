@@ -1,7 +1,6 @@
 package com.as.we.make.aswemake.product.controller;
 
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
-import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.service.ProductService;
 import com.as.we.make.aswemake.share.ResponseBody;
@@ -10,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,10 +36,10 @@ public class ProductController {
 
     // 상품 삭제
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, @RequestBody ProductDeleteRequestDto productDeleteRequestDto){
-        log.info("상품 삭제 api - controller : 상품 번호 = {}, 삭제 요청 계정 = {}", productDeleteRequestDto.getProductId(), request);
+    public ResponseEntity<ResponseBody> deleteProduct(HttpServletRequest request, @RequestParam Long productId){
+        log.info("상품 삭제 api - controller : 상품 번호 = {}, 삭제 요청 계정 = {}", productId, request);
 
-        return productService.deleteProduct(request, productDeleteRequestDto);
+        return productService.deleteProduct(request, productId);
     }
 
     // 상품 조회

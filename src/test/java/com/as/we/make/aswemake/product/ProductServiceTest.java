@@ -13,7 +13,6 @@ import com.as.we.make.aswemake.jwt.repository.TokenRepository;
 import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
-import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
@@ -212,10 +211,6 @@ public class ProductServiceTest {
 
         productRepository.save(product);
 
-        ProductDeleteRequestDto productDeleteRequestDto = ProductDeleteRequestDto.builder()
-                .productId(2L)
-                .build();
-
 //        DispatcherServlet servlet = new DispatcherServlet();
 
 //        MockHttpServletResponse response = new MockHttpServletResponse();
@@ -243,7 +238,7 @@ public class ProductServiceTest {
 //        response.addHeader("Access-Token-Expire-Time", tokenDto.getAccessTokenExpiresIn().toString());
 
         // 계정 생성 후 반환되는 상태 코드 값
-        int statusCode = productService.deleteProduct(request, productDeleteRequestDto).getBody().getStatusCode();
+        int statusCode = productService.deleteProduct(request, product.getProductId()).getBody().getStatusCode();
 
         // then
         // 상태 코드 값이 정상처리된 200인지 확인
