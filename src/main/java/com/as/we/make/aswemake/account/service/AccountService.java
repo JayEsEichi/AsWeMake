@@ -45,6 +45,11 @@ public class AccountService {
             return new ResponseEntity<>(new ResponseBody(StatusCode.CANNOT_CREATE_ACCOUNT, null), HttpStatus.BAD_REQUEST);
         }
 
+        // 중복 계정 확인
+        if(accountExceptionInterface.checkDuplicateEmail(accountCreateRequestDto.getAccountEmail())){
+            return new ResponseEntity<>(new ResponseBody(StatusCode.DUPLICATE_ACCOUNT_EMAIL, null), HttpStatus.BAD_REQUEST);
+        }
+
         // MART 계정 권한을 설정하지 않으면 초기 USER 권한
         String authority = "USER";
 

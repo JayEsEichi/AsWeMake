@@ -13,4 +13,7 @@ public interface AccountExceptionInterface {
 
     /** 상품 관리는 MART 권한을 가진 계정만 가능함을 확인 **/
     boolean checkAuthority(String authority);
+
+    /** 이메일 중복 가입 확인 **/
+    boolean checkDuplicateEmail(String accountEmail);
 }

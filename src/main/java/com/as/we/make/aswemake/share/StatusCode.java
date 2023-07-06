@@ -22,7 +22,9 @@ public enum StatusCode {
     // 결제하고자 하는 주문 내역이 자기가 등록한 주문 내역이 아닐 경우
     CANNOT_PAY_ORDER(456, "본인의 주문 내역이 아니라서 결제할 수 없습니다."),
     // 주문 내역보다 결제 금액이 부족할 경우
-    SHORTAGE_OF_MONEY(457, "결제 금액이 부족합니다.");
+    SHORTAGE_OF_MONEY(457, "결제 금액이 부족합니다."),
+    // 이메일이 중복일 경우
+    DUPLICATE_ACCOUNT_EMAIL(458, "이미 존재하는 이메일 계정입니다.");
 
     public Integer statusCode;
     public String statusMessage;
