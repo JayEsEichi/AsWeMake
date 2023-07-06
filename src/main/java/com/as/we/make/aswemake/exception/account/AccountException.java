@@ -56,4 +56,15 @@ public class AccountException implements AccountExceptionInterface {
         return false;
     }
 
+    /** 이메일 중복 확인 **/
+    @Override
+    public boolean checkDuplicateEmail(String accountEmail) {
+
+        if(accountRepository.findByAccountEmail(accountEmail).isPresent()){
+            return true;
+        }
+
+        return false;
+    }
+
 }
