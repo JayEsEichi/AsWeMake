@@ -141,6 +141,91 @@ http://localhost:8080/swagger-ui/index.html#/
 ##
 
 ### 🗂️ ERD
+![erd](https://github.com/JayEsEichi/AsWeMake/assets/96898059/641b49ac-2233-4653-9ae0-0f301c502f00)
+<details>
+<summary>Account</summary>
+  
+  - `accountId` : 계정 고유 id  
+  - `accountEmail` : 계정 이메일 아이디  
+  - `accountPwd` : 계정 비밀번호
+  
+</details>
+<details>
+<summary>AccountAithority</summary>
+  
+  - `accountAccountId` : 계정 고유 id
+  - `authority` : 계정 권한
+  
+</details>
+<details>
+<summary>Token</summary>
+  
+  - `tokenId` : 토큰 고유 id  
+  - `grantType` : Bearer 권한 타입  
+  - `accessToken` : 액세스 토큰
+  - `refreshToken` : 리프레시 토큰
+  - `accountId` : 토큰이 발급된 계정 고유 id (Foreign Key)
+  
+</details>
+<details>
+<summary>Product</summary>
+  
+  - `productId` : 상품 고유 id
+  - `productName` : 상품 이름
+  - `price` : 상품 가격
+  - `createdAt` : 생성 일자
+  - `modifiedAt` : 변경 일자
+  - `accountId` : 계정 고유 id (Foreign Key)  
+  
+</details>
+<details>
+<summary>ProductUpdateDetails</summary>
+  
+  - `productUpdateDetailsId` : 상품 정보 이력 고유 id
+  - `productName` : 상품 이름
+  - `price` : 상품 가격
+  - `updateTime` : 상품 가격 업데이트 일자
+  - `productId` : 상품 고유 id (Foreign Key)
+  
+</details>
+<details>
+<summary>Orders</summary>
+  
+  - `ordersId` : 주문 고유 id
+  - `deliveryPay` : 배달비
+  - `totalPrice` : 초기 총 금액
+  - `accountId` : 주문 등록한 계정의 고유 id (Foreign Key)
+
+</details>
+<details>
+<summary>OrdersProducts</summary>
+  
+  - `ordersOrdersId` : 주문 고유 id
+  - `productKey` : 주문에 등록된 상품의 고유 id
+  - `productCount` : 주문 상품 개수  
+
+</details>
+<details>
+<summary>coupon</summary>
+  
+  - `couponId` : 쿠폰 고유 id  
+  - `couponType` : 쿠폰 타입 (비율 / 고정)
+  - `discountContent` : 할인 금액 내용
+  
+</details>
+<details>
+<summary>PaymentDetails</summary>
+  
+  - `paymentDetailsId` : 결제 내역 고유 id  
+  - `totalPrice` : 총 금액 
+  - `paymentCost` : 지불 금액
+  - `reaminCost` : 잔액
+  - `couponWheter` : 쿠폰 사용 여부 (O / X)
+  - `discountPrice` : 할인 금액
+  - `ordersId` : 결제할 주문의 고유 id
+  - `couponId` : 쿠폰을 사용할 경우의 해당 쿠폰 고유 id
+  
+</details>
 
 ##
 
