@@ -7,7 +7,6 @@ import com.as.we.make.aswemake.product.domain.ProductUpdateDetails;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.product.repository.ProductUpdateDetailsRepository;
 import com.as.we.make.aswemake.product.request.ProductCreateRequestDto;
-import com.as.we.make.aswemake.product.request.ProductDeleteRequestDto;
 import com.as.we.make.aswemake.product.request.ProductUpdateRequestDto;
 import com.as.we.make.aswemake.product.response.ProductResponseDto;
 import com.as.we.make.aswemake.product.service.ProductService;
@@ -31,7 +30,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -170,23 +168,16 @@ public class ProductControllerTest {
 
         productRepository.save(product);
 
-        ProductDeleteRequestDto productDeleteRequestDto = ProductDeleteRequestDto.builder()
-                .productId(2L)
-                .build();
-
         doReturn(new ResponseEntity<>(new ResponseBody(StatusCode.IT_WORK, "상품 삭제"), HttpStatus.OK))
                 .when(productService)
-                .deleteProduct(any(HttpServletRequest.class), any(ProductDeleteRequestDto.class));
-
-        String productDeleteRequestInfo = new Gson().toJson(productDeleteRequestDto);
+                .deleteProduct(any(HttpServletRequest.class), any(Long.class));
 
         // when
         ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.delete("/awm/product/delete")
+                MockMvcRequestBuilders.delete("/awm/product/delete?productId=" + 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJ0QG5hdmVyLmNvbSIsImF1dGgiOiJNQVJUIiwiZXhwIjoxNjg4NDUxODYyfQ.Ll1hqSIX7PzsvfBF4PbgR5ilIM9SQh-f9WpWA7GAWYo")
-                        .characterEncoding("utf-8")
-                        .content(productDeleteRequestInfo));
+                        .characterEncoding("utf-8"));
 
         // then
         ResultActions resultActionsThen = resultActions

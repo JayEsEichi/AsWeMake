@@ -149,7 +149,7 @@ public class PayService {
                     .couponWhether("O")
                     .discountPrice(discountPrice)
                     .coupon(coupon)
-                    .order(payOrder)
+                    .ordersId(payOrder.getOrdersId())
                     .build();
 
             // 결제 내역 저장
@@ -174,7 +174,7 @@ public class PayService {
                     .remainCost(payOrderRequestDto.getPaymentCost() - payOrder.getTotalPrice())
                     .couponWhether("X")
                     .discountPrice(0)
-                    .order(payOrder)
+                    .ordersId(payOrder.getOrdersId())
                     .build();
 
             // 결제 내역 저장
