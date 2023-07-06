@@ -3,7 +3,6 @@ package com.as.we.make.aswemake.share;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +14,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Timestamped {
 

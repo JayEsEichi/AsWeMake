@@ -34,11 +34,11 @@ public class PaymentDetails {
     @Column(nullable = false)
     private Integer discountPrice;
 
+    @Column(nullable = false)
+    private Long ordersId;
+
     @JoinColumn(name = "couponId")
     @OneToOne(fetch = FetchType.LAZY)
     private Coupon coupon;
 
-    @JoinColumn(name = "ordersId")
-    @OneToOne(fetch = FetchType.LAZY)
-    private Orders order;
 }
