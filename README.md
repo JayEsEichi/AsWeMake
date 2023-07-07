@@ -299,7 +299,11 @@
 ##
 
 ### 🗂️ 실행 방법
-!! 개발 툴은 IntellJ로 진행하였습니다.
+ - 서비스 확인 툴 : PostMan  
+ - 개발 툴 : IntellJ  
+ - 인증이 필요한 api들은 HTTP 헤더에 JWT 액세스 토큰 (Authorization), 리프레시 토큰(Refresh-Token)을 포함해야 합니다.  
+ - 실행 방법대로 실행할 때 application.properties 파일이 없을 경우를 대비하여 첨부, PostMan에 제가 서비스 실행한 Collection 파일을 첨부하였습니다.  
+  
 #### (1) 프로젝트를 clone
 #### (2) application.properties 파일 설정  
 ![ddd](https://github.com/JayEsEichi/AsWeMake/assets/96898059/1efe2b61-e6b3-42f1-abe0-895606de1290)
@@ -431,4 +435,5 @@ http://localhost:8080/swagger-ui/index.html#/
 ##
 
 ### 🏗️ 프로젝트 아키텍처
-![서비스 아키텍쳐 #중간발표](https://user-images.githubusercontent.com/112993031/204065939-8d25f487-30cb-43d0-ab3a-1a663ccf8335.png)
+![서비스 아키텍처](https://github.com/JayEsEichi/AsWeMake/assets/96898059/1466be53-7356-43a6-a65c-5b7dd3c5b5fe)
+
