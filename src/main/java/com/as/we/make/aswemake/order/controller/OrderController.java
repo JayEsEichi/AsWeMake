@@ -1,7 +1,6 @@
 package com.as.we.make.aswemake.order.controller;
 
 import com.as.we.make.aswemake.order.request.OrderRequestDto;
-import com.as.we.make.aswemake.pay.request.PayOrderRequestDto;
 import com.as.we.make.aswemake.order.service.OrderService;
 import com.as.we.make.aswemake.share.ResponseBody;
 import jakarta.servlet.http.HttpServletRequest;

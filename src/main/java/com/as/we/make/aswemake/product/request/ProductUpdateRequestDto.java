@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class ProductUpdateRequestDto {
+    // 수정할 상품의 id
     private Long productId;
+    // 수정할 상품의 가격
     private Integer price;
 }

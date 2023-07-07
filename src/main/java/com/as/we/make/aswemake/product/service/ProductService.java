@@ -117,7 +117,7 @@ public class ProductService {
         // 가격 수정
         updateProduct.setPrice(productUpdateRequestDto.getPrice());
 
-        // 영속성 컨텍스트에 반영된 트랜잭션 데이터를 반영하여 수정일자 업데이트
+        // 영속성 컨텍스트에 반영된 트랜잭션 데이터를 즉시 반영하여 수정일자 업데이트
         entityManager.flush();
         entityManager.clear();
 

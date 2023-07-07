@@ -1,18 +1,13 @@
 package com.as.we.make.aswemake.order.service;
 
 import com.as.we.make.aswemake.account.domain.Account;
-import com.as.we.make.aswemake.coupon.domain.Coupon;
-import com.as.we.make.aswemake.coupon.repository.CouponRepository;
-import com.as.we.make.aswemake.exception.order.OrderExceptionInterface;
 import com.as.we.make.aswemake.exception.token.TokenExceptionInterface;
 import com.as.we.make.aswemake.jwt.JwtTokenProvider;
 import com.as.we.make.aswemake.order.domain.Orders;
 import com.as.we.make.aswemake.order.repository.OrderRepository;
 import com.as.we.make.aswemake.order.request.OrderRequestDto;
-import com.as.we.make.aswemake.pay.request.PayOrderRequestDto;
 import com.as.we.make.aswemake.order.response.OrderProductResponseVo;
 import com.as.we.make.aswemake.order.response.OrderResponseDto;
-import com.as.we.make.aswemake.pay.response.PayResponseDto;
 import com.as.we.make.aswemake.product.domain.Product;
 import com.as.we.make.aswemake.product.repository.ProductRepository;
 import com.as.we.make.aswemake.share.ResponseBody;

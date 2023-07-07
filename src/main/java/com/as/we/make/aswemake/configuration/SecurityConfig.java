@@ -23,6 +23,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    // Spring Security 적용 후 토큰 인증이 필요하지 않은 경로 허용 설정
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -36,7 +37,8 @@ public class SecurityConfig {
                                 "/awm/product/get",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**").permitAll()
-                        // product api 경로에는 MART 권한을 가진 계정만이 접근가능하게 하는 옵션. 하지만 USER 권한을 가진 계정이 접근했을 경우의 예외처리를 확인하기 위해 주석처리
+                        // product api 경로에는 MART 권한을 가진 계정만이 접근가능하게 하는 옵션.
+                        // 하지만 USER 권한을 가진 계정이 접근했을 경우의 예외처리를 확인하기 위해 주석처리
                         // .requestMatchers("/awm/product/**").hasAuthority("MART")
                         .anyRequest().authenticated()
                 )
@@ -45,6 +47,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // 비밃번호 인코딩 암호화
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();

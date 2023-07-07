@@ -26,7 +26,9 @@ public enum StatusCode {
     // 이메일이 중복일 경우
     DUPLICATE_ACCOUNT_EMAIL(458, "이미 존재하는 이메일 계정입니다.");
 
+    // 결과 상태 코드
     public Integer statusCode;
+    // 결과 상태 메세지
     public String statusMessage;
 
 }

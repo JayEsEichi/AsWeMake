@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class OrderProductResponseVo {
+    // 상품 id
     private Long productId;
+    // 상품 이름
     private String productName;
+    // 상품 가격
     private Integer price;
+    // 상품 개수
     private Integer productCount;
 }

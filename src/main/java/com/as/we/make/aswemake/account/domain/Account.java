@@ -21,16 +21,20 @@ import java.util.stream.Collectors;
 @Entity
 public class Account implements UserDetails {
 
+    // 계정 고유 id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long accountId;
 
+    // 계정 이메일
     @Column(nullable = false)
     private String accountEmail;
 
+    // 계정 비밀번호
     @Column(nullable = false)
     private String accountPwd;
 
+    // JWT 관련 권한
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> authority = new ArrayList<>();
